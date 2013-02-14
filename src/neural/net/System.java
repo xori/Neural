@@ -57,9 +57,10 @@ public class System {
     public Node [][] system;
     public ArrayList<Node> input, output;
     
-    public Double[] run(double ... input) {
-        if(input.length!=system[0].length)
+    public Double[] run(Double ... input) {
+        if(input.length!=system[0].length) {
             throw new Error("Number of inputs does not match number of nodes");
+        }
         
         Double[] response = new Double[system[system.length-1].length];
         
@@ -82,7 +83,7 @@ public class System {
      * This function assumes that 'run' has been run for the system already.
      * @param expected 
      */
-    public void train(double ... expected){
+    public void train(Double ... expected){
         for (int i = 0; i < output.size(); i++) {
             output.get(i).setError(expected[i] - output.get(i).output());
         }
@@ -96,7 +97,5 @@ public class System {
                 system[i][j].forwardprop();
             }
         }
-    }
-    
-    
+    }    
 }
