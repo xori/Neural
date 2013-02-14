@@ -12,7 +12,7 @@ public class Node implements Serializable {
         INPUT, HIDDEN, OUTPUT
     };
     public type NODETYPE;
-    public static double LEARNSPEED = 0.5;
+    public static double LEARNSPEED = 0.2;
     
     private double output = Double.NaN;
     private double error  = Double.NaN;
@@ -45,7 +45,8 @@ public class Node implements Serializable {
             throw new Error("Node:: Asked for an object that doesn't exist.");
         }
         if (Double.isNaN(error))
-            throw new Error("Node:: Adjustment not calculated for this layer.");
+            throw new Error("Node:: Adjustment not calculated for this layer. ("
+                    +NODETYPE+")");
         
         return error * weights.get(inputs.indexOf(n));
     }
@@ -103,7 +104,8 @@ public class Node implements Serializable {
         if (NODETYPE == type.INPUT)
             return;
         if (Double.isNaN(error) || Double.isNaN(sum))
-            throw new Error("Node:: Error not set. Did you run backprop first?");
+            throw new Error("Node:: Error not set. Did you run backprop first? ("
+                    +NODETYPE+")");
         
         for(int i = 0; i < inputs.size(); i++) {
             weights.add(i,

@@ -3,6 +3,7 @@ package neural.net;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -27,18 +28,26 @@ public class Main {
         } else {
             r = new Random();
         }
-        loadFile("data.txt");
+        loadFile("digitdata.txt");
         System bob;
-        bob = new System(inputs, 3, 5, 7, outputs);
+        bob = new System(inputs, 35, outputs);
         
         double average;
+        long seed = java.lang.System.nanoTime();
         for(int j = 0; j < 30; j++) {
+            
+            // Below code shuffles the input and output in the exact same
+            // manner because the two seeds are the same. 
+            Collections.shuffle(input, new Random(seed + j));
+            Collections.shuffle(output, new Random(seed + j));
+            
             average = 0;
             for(int i = 0; i < input.size(); i++) {
+                //TODO only looking at first number, must look at all of them.
                 average += output.get(i)[0] - bob.run(input.get(i))[0];
                 bob.train(output.get(i));
             }
-            o(average/(double)input.size());
+            o(average/(double)input.size() + "\t" + average);
         }
     }
     
@@ -50,7 +59,7 @@ public class Main {
         ArrayList<Double> temp = new ArrayList<Double>();
         
         while (s.hasNextLine()) {
-            token = new StringTokenizer(s.nextLine(), "\t\r\n,");
+            token = new StringTokenizer(s.nextLine(), ",\t\r\n");
             if (token.countTokens() != inputs + outputs) {
                 continue;
             }

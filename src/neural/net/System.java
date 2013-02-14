@@ -84,8 +84,11 @@ public class System {
      * @param expected 
      */
     public void train(Double ... expected){
+        double temp;
         for (int i = 0; i < output.size(); i++) {
-            output.get(i).setError(expected[i] - output.get(i).output());
+            temp = expected[i] - output.get(i).output();
+            output.get(i).setError((Double.isNaN(temp)? 0 : temp));
+            // If the error isn't a real number something is up.
         }
         for (int i = system.length-1; i >= 0; i--) {
             for (int j = system[i].length-1; j >= 0; j--) {
