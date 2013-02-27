@@ -26,15 +26,21 @@ public class Main {
         if(args.length>0) {
             r = new Random(Long.parseLong(args[0]));
         } else {
-            r = new Random();
+            long seed = java.lang.System.nanoTime();
+            o(seed);
+            r = new Random(seed);
+            //40113043670570
         }
+        
+        
         loadFile("digitdata.txt");
         System bob;
         bob = new System(inputs, 35, outputs);
         
         double average;
         long seed = java.lang.System.nanoTime();
-        for(int j = 0; j < 30; j++) {
+        Double [] compare;
+        for(int j = 0; j < 100; j++) {
             
             // Below code shuffles the input and output in the exact same
             // manner because the two seeds are the same. 
@@ -43,8 +49,10 @@ public class Main {
             
             average = 0;
             for(int i = 0; i < input.size(); i++) {
-                //TODO only looking at first number, must look at all of them.
-                average += output.get(i)[0] - bob.run(input.get(i))[0];
+                compare = bob.run(input.get(i));
+                for (int k = 0; k < outputs; k++) {
+                    average += Math.abs(output.get(i)[k] - compare[k]);
+                }
                 bob.train(output.get(i));
             }
             o(average/(double)input.size() + "\t" + average);

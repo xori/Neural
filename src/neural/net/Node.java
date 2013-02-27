@@ -12,7 +12,7 @@ public class Node implements Serializable {
         INPUT, HIDDEN, OUTPUT
     };
     public type NODETYPE;
-    public static double LEARNSPEED = 0.2;
+    public static double LEARNSPEED = 0.4;
     
     private double output = Double.NaN;
     private double error  = Double.NaN;
@@ -33,8 +33,9 @@ public class Node implements Serializable {
             return output;
         
         sum = 0;
-        for(int i = 0; i < inputs.size(); i++)
+        for(int i = 0; i < inputs.size(); i++) {
             sum += inputs.get(i).output() * weights.get(i);
+        }
         
         output = Math.tanh(sum);
         return output;        
@@ -80,7 +81,12 @@ public class Node implements Serializable {
     }
     
     private double differential(double sum) {
-        return (4 * Math.pow(Math.cosh(sum),2))/Math.pow(Math.cosh(2* sum)+1, 2);
+        double s = Math.pow(Math.tanh(sum),2);
+        if (Double.isInfinite(s)) {
+            o(sum);
+            java.lang.System.exit(3);
+        }
+        return 1.0 - s;
     }
     
     public void randomize() {
@@ -96,17 +102,19 @@ public class Node implements Serializable {
         if (Double.isNaN(error))
             error = 0;
         //TODO
-        for (Node n : outputs)
+        for (Node n : outputs) {
             error += n.askForAdjustments(this);
+        }
     }
     
     public void forwardprop () {
-        if (NODETYPE == type.INPUT)
+        if (NODETYPE == type.INPUT) {
             return;
-        if (Double.isNaN(error) || Double.isNaN(sum))
+        }
+        if (Double.isNaN(error) || Double.isNaN(sum)) {
             throw new Error("Node:: Error not set. Did you run backprop first? ("
                     +NODETYPE+")");
-        
+        }
         for(int i = 0; i < inputs.size(); i++) {
             weights.add(i,
                     weights.get(i) + LEARNSPEED * error * 
@@ -114,5 +122,24 @@ public class Node implements Serializable {
             );
             weights.remove(i+1);
         }
+    }
+    
+    private void o (Object o) {
+        java.lang.System.out.println(o);
+    }
+    
+    @Override
+    public String toString () {
+        String result = "Node::"+this.NODETYPE+"::"+this.hashCode()+"\n";
+        result += "INPUTS:\n";
+        for(Node n : inputs) {
+            result += "\t"+n.output();
+        }
+        result += "\nWEIGHTS:\n";
+        for(Double w : weights) {
+            result += w + ", ";
+        }
+        result += "\n"+this.output;
+        return result;
     }
 }

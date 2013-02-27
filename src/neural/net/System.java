@@ -37,8 +37,9 @@ public class System {
                     if (i==amounts.length-1) {
                         system[i][j].NODETYPE = Node.type.OUTPUT;
                         output.add(system[i][j]);
-                    } else
-                        system[i][j].NODETYPE = Node.type.HIDDEN;        
+                    } else {
+                        system[i][j].NODETYPE = Node.type.HIDDEN;
+                    }        
                 }
             }
         }
