@@ -3,6 +3,7 @@ package neural.net;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
@@ -35,28 +36,48 @@ public class Main {
         
         loadFile("digitdata.txt");
         System bob;
-        bob = new System(inputs, 35, outputs);
+        bob = new System(inputs, 40, outputs);
         
         double average;
-        long seed = java.lang.System.nanoTime();
+        long seed = r.nextLong();
         Double [] compare;
+        // Below variables used to find max value of the output.
+        int expectedValue;
+        int nfound;
         for(int j = 0; j < 100; j++) {
-            
             // Below code shuffles the input and output in the exact same
             // manner because the two seeds are the same. 
             Collections.shuffle(input, new Random(seed + j));
             Collections.shuffle(output, new Random(seed + j));
-            
             average = 0;
+            nfound = 0;
             for(int i = 0; i < input.size(); i++) {
                 compare = bob.run(input.get(i));
+                expectedValue = max(output.get(i));
+                nfound += max(compare) == expectedValue? 1 : 0;
                 for (int k = 0; k < outputs; k++) {
                     average += Math.abs(output.get(i)[k] - compare[k]);
                 }
                 bob.train(output.get(i));
             }
-            o(average/(double)input.size() + "\t" + average);
+            o(nfound/(double)input.size()+"\t"+average/(double)input.size() + "\t" + average);
         }
+    }
+    /**
+     * Find maximum value in array
+     * @param in a Double array to look through
+     * @return the index of the largest value;
+     */
+    private static int max (Double[] in) {
+        Double max = -2.0;
+        int index = -1;
+        for (int i = 0; i < in.length; i++) {
+            if (max < in[i]){
+                max = in[i];
+                index = i;
+            }
+        }
+        return index;
     }
     
     private static void loadFile (String file) throws FileNotFoundException {

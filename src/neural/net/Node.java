@@ -12,43 +12,48 @@ public class Node implements Serializable {
         INPUT, HIDDEN, OUTPUT
     };
     public type NODETYPE;
-    public static double LEARNSPEED = 0.4;
-    
+    public double LEARNSPEED = 0.4;
+    public double MOMENTUM = 0.4;
     private double output = Double.NaN;
     private double error  = Double.NaN;
     private double sum    = Double.NaN;
     private ArrayList<Double> weights;
     private ArrayList<Node> inputs;
     private ArrayList<Node> outputs;
+    private ArrayList<Double> momentum;
+    
     public Node () {
         weights = new ArrayList<Double>();
         inputs  = new ArrayList<Node>();
         outputs = new ArrayList<Node>();
+        momentum= new ArrayList<Double>();
         NODETYPE = type.HIDDEN;
     }
     
-    
     public double output () {
-        if (!Double.isNaN(output))
+        if (!Double.isNaN(output)) {
             return output;
-        
+        }
         sum = 0;
         for(int i = 0; i < inputs.size(); i++) {
             sum += inputs.get(i).output() * weights.get(i);
         }
-        
-        output = Math.tanh(sum);
+        output = activation(sum);
         return output;        
+    }
+    
+    public double activation (double sum) {
+        return Math.tanh(sum);
     }
     
     public double askForAdjustments(Node n) {
         if (!inputs.contains(n)) {
             throw new Error("Node:: Asked for an object that doesn't exist.");
         }
-        if (Double.isNaN(error))
+        if (Double.isNaN(error)) {
             throw new Error("Node:: Adjustment not calculated for this layer. ("
                     +NODETYPE+")");
-        
+        }
         return error * weights.get(inputs.indexOf(n));
     }
     
@@ -63,6 +68,7 @@ public class Node implements Serializable {
     public void addLink(Node node) {
         inputs.add(node);
         weights.add(0.1);
+        momentum.add(0.0);
     }
     public void addOutputLink(Node node) {
         outputs.add(node);
@@ -78,15 +84,14 @@ public class Node implements Serializable {
         }
         sum     = Double.NaN;
         error   = Double.NaN;
+        for(int i = 0; i < momentum.size(); i++) {
+            momentum.set(i, 0.0);
+        }
     }
     
     private double differential(double sum) {
-        double s = Math.pow(Math.tanh(sum),2);
-        if (Double.isInfinite(s)) {
-            o(sum);
-            java.lang.System.exit(3);
-        }
-        return 1.0 - s;
+        return 1.0 - Math.pow(Math.tanh(sum),2);
+        //1.0 - activation(sum) * activation(sum);
     }
     
     public void randomize() {
@@ -115,12 +120,13 @@ public class Node implements Serializable {
             throw new Error("Node:: Error not set. Did you run backprop first? ("
                     +NODETYPE+")");
         }
+        double newWeight;
         for(int i = 0; i < inputs.size(); i++) {
-            weights.add(i,
-                    weights.get(i) + LEARNSPEED * error * 
-                    differential(sum) * inputs.get(i).output()
-            );
-            weights.remove(i+1);
+            newWeight = weights.get(i) + LEARNSPEED * error * 
+                    differential(activation(sum)) * inputs.get(i).output();
+            momentum.set(i, momentum.get(i) + (newWeight - weights.get(i)) * MOMENTUM);
+            newWeight += momentum.get(i);
+            weights.set(i,newWeight);
         }
     }
     
