@@ -14,16 +14,17 @@ public class Prep {
     
     
     public static void main (String [] args) throws Exception {
-        new File("digitdata.txt").delete();
+        String F = "tanh-test.txt";
+        new File(F).delete();
         
         Scanner f;
-        BufferedWriter fnew = new BufferedWriter(new FileWriter(new File("digitdata.txt")));
+        BufferedWriter fnew = new BufferedWriter(new FileWriter(new File(F)));
         fnew.write("64 10");
         fnew.newLine();
         
         
         for (int i = 0; i < 10; i++) {
-            f = new Scanner(new File("data/digit_train_"+i+".txt"));
+            f = new Scanner(new File("data/digit_test_"+i+".txt"));
             
             while(f.hasNextLine()) {
                 fnew.write(f.nextLine().trim()+",");

@@ -7,8 +7,13 @@ import java.util.ArrayList;
  * @author Evan Verworn (4582938) <ev09qz@brocku.ca>
  */
 public class System {
-    
-    
+    // false = sigmoid, true = tanh
+    public boolean ACTIVATION = false;
+    // false = vanilla, true = qprop
+    public boolean VARIANT = false;
+    public double MOMENTUM = 0.4;
+    public double LEARNSPEED = 0.4;
+     
     /**
      * The assembler works like so, if a 3-6-3 neural net is wanted. Then you would
      *  pass in `new System(3,6,3);` into the constructor
@@ -26,7 +31,7 @@ public class System {
         for(int i = 0 ; i < amounts.length; i++) {
             system[i] = new Node[amounts[i]];
             for(int j = 0; j < amounts[i]; j++) {
-                system[i][j] = new Node();
+                system[i][j] = new Node(this);
                 if (i==0){
                     system[i][j].NODETYPE = Node.type.INPUT;
                     input.add(system[i][j]);
@@ -101,5 +106,12 @@ public class System {
                 system[i][j].forwardprop();
             }
         }
-    }    
+    }
+    
+    public void setConf(Run r) {
+        VARIANT = r.getVariant().equals("Vanilla")? false : true;
+        ACTIVATION = r.getActivation().equals("Sigmoid")? false : true;
+        MOMENTUM = r.getMomentum();
+        LEARNSPEED = r.getLearningRate();
+    }
 }

@@ -3,7 +3,6 @@ package neural.net;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Random;
 import java.util.Scanner;
@@ -14,31 +13,23 @@ import java.util.StringTokenizer;
  */
 public class Main {
 
-    public static Random r;
-    public static ArrayList<Double[]> 
+    public static final Random r = new Random();
+    public ArrayList<Double[]> 
             input = new ArrayList<Double[]>(),
             output = new ArrayList<Double[]>();
-    static int inputs, outputs;
+    public int inputs, outputs;
+    Run configurations;
     
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String[] args) throws FileNotFoundException {
-        if(args.length>0) {
-            r = new Random(Long.parseLong(args[0]));
-        } else {
-            long seed = java.lang.System.nanoTime();
-            o(seed);
-            r = new Random(seed);
-            //40113043670570
-        }
-        
-        
-        loadFile("digitdata.txt");
+    public Main(Run r) {
+        configurations = r;
+    }
+    
+    public void run() throws FileNotFoundException {
+        loadFile(configurations.getTrain());
         System bob;
         bob = new System(inputs, 40, outputs);
+        bob.setConf(configurations);
         
-        double average;
         long seed = r.nextLong();
         Double [] compare;
         // Below variables used to find max value of the output.
@@ -49,18 +40,14 @@ public class Main {
             // manner because the two seeds are the same. 
             Collections.shuffle(input, new Random(seed + j));
             Collections.shuffle(output, new Random(seed + j));
-            average = 0;
             nfound = 0;
             for(int i = 0; i < input.size(); i++) {
                 compare = bob.run(input.get(i));
                 expectedValue = max(output.get(i));
                 nfound += max(compare) == expectedValue? 1 : 0;
-                for (int k = 0; k < outputs; k++) {
-                    average += Math.abs(output.get(i)[k] - compare[k]);
-                }
                 bob.train(output.get(i));
             }
-            o(nfound/(double)input.size()+"\t"+average/(double)input.size() + "\t" + average);
+            o(nfound/(double)input.size());
         }
     }
     /**
@@ -68,7 +55,7 @@ public class Main {
      * @param in a Double array to look through
      * @return the index of the largest value;
      */
-    private static int max (Double[] in) {
+    private int max (Double[] in) {
         Double max = -2.0;
         int index = -1;
         for (int i = 0; i < in.length; i++) {
@@ -80,7 +67,7 @@ public class Main {
         return index;
     }
     
-    private static void loadFile (String file) throws FileNotFoundException {
+    private void loadFile (String file) throws FileNotFoundException {
         Scanner s = new Scanner(new File(file));
         inputs = Integer.parseInt(s.next());
         outputs = Integer.parseInt(s.next());

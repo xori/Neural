@@ -11,9 +11,8 @@ public class Node implements Serializable {
     public enum type {
         INPUT, HIDDEN, OUTPUT
     };
-    public type NODETYPE;
-    public double LEARNSPEED = 0.4;
-    public double MOMENTUM = 0.4;
+    public type     NODETYPE;
+    private System sys;
     private double output = Double.NaN;
     private double error  = Double.NaN;
     private double sum    = Double.NaN;
@@ -22,12 +21,13 @@ public class Node implements Serializable {
     private ArrayList<Node> outputs;
     private ArrayList<Double> momentum;
     
-    public Node () {
+    public Node (System s) {
         weights = new ArrayList<Double>();
         inputs  = new ArrayList<Node>();
         outputs = new ArrayList<Node>();
         momentum= new ArrayList<Double>();
         NODETYPE = type.HIDDEN;
+        sys = s;
     }
     
     public double output () {
@@ -41,9 +41,15 @@ public class Node implements Serializable {
         output = activation(sum);
         return output;        
     }
-    
+    /**
+     * Squashes the input value to something between -1 and 1. If ACTIVATION is
+     * set to false will use the sigmoid function (which returns a value between
+     * 0 and 1) and if it's true will return a value between -1 and 1 as tanh
+     * @param sum the weighted sum
+     * @return squashed value
+     */
     public double activation (double sum) {
-        return Math.tanh(sum);
+        return (sys.ACTIVATION) ? Math.tanh(sum) : 1.0/( 1.0 + Math.pow(Math.E,(-1*sum)));
     }
     
     public double askForAdjustments(Node n) {
@@ -88,10 +94,15 @@ public class Node implements Serializable {
             momentum.set(i, 0.0);
         }
     }
-    
-    private double differential(double sum) {
-        return 1.0 - Math.pow(Math.tanh(sum),2);
-        //1.0 - activation(sum) * activation(sum);
+    /**
+     * Depending on ACTIVATION will depend on whether is uses the sigmoid 
+     * differential or the tanh. 
+     * @param x the squashed value.
+     * @return 
+     */
+    private double differential(double x) {
+        return 1.0 - (sys.ACTIVATION ? 
+                Math.pow(Math.tanh(x),2) : 1.0/( 1.0 + Math.pow(Math.E,(-1*x))));
     }
     
     public void randomize() {
@@ -102,11 +113,11 @@ public class Node implements Serializable {
     }
     
     public void backprop() {
-        if (NODETYPE == Node.type.INPUT || NODETYPE == Node.type.OUTPUT)
-            return; // trival case.
-        if (Double.isNaN(error))
+        if (NODETYPE == Node.type.INPUT || NODETYPE == Node.type.OUTPUT) {
+            return;
+        }else if (Double.isNaN(error)) {
             error = 0;
-        //TODO
+        }
         for (Node n : outputs) {
             error += n.askForAdjustments(this);
         }
@@ -122,9 +133,9 @@ public class Node implements Serializable {
         }
         double newWeight;
         for(int i = 0; i < inputs.size(); i++) {
-            newWeight = weights.get(i) + LEARNSPEED * error * 
+            newWeight = weights.get(i) + sys.LEARNSPEED * error * 
                     differential(activation(sum)) * inputs.get(i).output();
-            momentum.set(i, momentum.get(i) + (newWeight - weights.get(i)) * MOMENTUM);
+            momentum.set(i, momentum.get(i) + (newWeight - weights.get(i)) * sys.MOMENTUM);
             newWeight += momentum.get(i);
             weights.set(i,newWeight);
         }
