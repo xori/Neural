@@ -83,7 +83,7 @@ public class TestHarness {
             if(!f.exists()){ break; }
             BufferedReader br = new BufferedReader(new FileReader(f));
             temp = gson.fromJson(br, Run.class);
-            Main.o(temp);
+            java.lang.System.out.print(temp+" ");
             new Main(temp).run();
             Main.o("Complete.");
             f = new File("output/"+(c++)+".json"); f.delete();
