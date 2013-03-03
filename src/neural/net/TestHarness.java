@@ -89,7 +89,7 @@ public class TestHarness {
             temp = gson.fromJson(br, Run.class);
             br.close();
             while(true) {
-                if (active.size() < 1) {
+                if (active.size() < 12) {
                     Main.o(temp);
                     cThread = new Main(temp);
                     active.add(cThread);
