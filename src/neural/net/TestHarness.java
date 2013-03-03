@@ -9,6 +9,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 /**
  *
  * @author Evan
@@ -95,11 +96,13 @@ public class TestHarness {
                     cThread.start();
                     break;
                 }
-                for(Thread t : active){
-                    if(!t.isAlive()) {
-                        Main.o("Completed "+t.getName());
-                        active.remove(t);
-                    }
+                Iterator<Thread> it = active.iterator();
+                while (it.hasNext()) {
+                    cThread = it.next(); 
+                    if (!cThread.isAlive()) {
+                        Main.o("Completed "+cThread.getName());
+                        it.remove();
+                     }
                 }
                 Thread.sleep(1000);
             }
