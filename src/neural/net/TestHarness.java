@@ -105,7 +105,9 @@ public class TestHarness {
             }
             c++;
         }
-        
+        for(Thread t : active) {
+            t.join();
+        }
         
     }
 }
