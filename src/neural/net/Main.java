@@ -1,18 +1,23 @@
 package neural.net;
 
+import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * @author Evan Verworn (4582938) <ev09qz@brocku.ca>
  */
-public class Main {
+public class Main extends Thread{
 
     public static final Random r = new Random();
     public ArrayList<Double[]> 
@@ -22,11 +27,13 @@ public class Main {
     Run configurations;
     
     public Main(Run r) {
+        super(Long.toString(r.getId()));
         configurations = r;
     }
     private Main(){};
     
-    public void run() throws FileNotFoundException {
+    @Override
+    public void run(){
         List<Double> generationList;
         long seed;
         Double [] compare;
@@ -71,6 +78,20 @@ public class Main {
             nfound += max(compare) == expectedValue? 1 : 0;
         }
         configurations.setTestError(nfound / (double) input.size());
+        
+        
+        // BELOW CODE DONE FOR THREADING PURPOSES.
+        // I FELT BAD WRITING IT.
+        Gson gson = new Gson();
+        File f = new File("output/"+configurations.getId()+".json"); f.delete();
+        FileWriter fw = null;
+        try {
+            fw = new FileWriter(f);
+            fw.write(gson.toJson(configurations));
+            fw.close();
+        } catch (IOException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     /**
      * Find maximum value in array
@@ -89,8 +110,13 @@ public class Main {
         return index;
     }
     
-    private void loadFile (String file) throws FileNotFoundException {
-        Scanner s = new Scanner(new File(file));
+    private void loadFile (String file){
+        Scanner s = null;
+        try {
+            s = new Scanner(new File(file));
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+        }
         inputs = Integer.parseInt(s.next());
         outputs = Integer.parseInt(s.next());
         StringTokenizer token;

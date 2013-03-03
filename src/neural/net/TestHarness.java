@@ -7,6 +7,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 /**
  *
@@ -25,7 +26,7 @@ public class TestHarness {
                 for(double momentum = 0; momentum <= 1; momentum+=0.1) {
                     for(double learnRate = 0.1; learnRate <= 1; learnRate+=0.1) {
                         for(int shape = 10; shape < 100; shape+= 10) {
-                            for(int generations = 100; generations <= 100; generations+=10) {
+                            for(int generations = 200; generations <= 200; generations+=10) {
                                 r = new Run();
                                 switch(variant) {
                                     case 0: r.setVariant("Vanilla"); break;
@@ -40,13 +41,13 @@ public class TestHarness {
                                     r.setTrain("tanh-train.txt");
                                     r.setTest ("tanh-test.txt"); break;
                                 }
-                                r.setId(id++);
+                                r.setId(id);
                                 r.setMomentum(momentum);
                                 r.setLearningRate(learnRate);
                                 r.setGenerations(generations);
                                 r.setShape(Arrays.asList(new Integer[]{64,shape,10}));
                                 try {
-                                    fw = new FileWriter("configs/"+id+".json");
+                                    fw = new FileWriter("configs/"+(id++)+".json");
                                     fw.write(gson.toJson(r).replaceAll("\n", "\r\n"));
                                     fw.close();
                                 } catch(Exception e) {}
@@ -67,9 +68,9 @@ public class TestHarness {
     }
     //</editor-fold>
 
-    public static void main (String[] args) throws FileNotFoundException, IOException {
+    public static void main (String[] args) throws FileNotFoundException, IOException, InterruptedException {
         generate();
-        int c = 1;
+        int c = 0;
         int end = 1000000;
         if (args.length == 2) {
             c = Integer.parseInt(args[0]); 
@@ -78,18 +79,31 @@ public class TestHarness {
         File f;
         Gson gson = new Gson();
         Run temp;
+        ArrayList<Thread> active = new ArrayList<Thread>(10);
+        Thread cThread;
         while(c <= end){
             f = new File("configs/"+(c)+".json");
             if(!f.exists()){ break; }
             BufferedReader br = new BufferedReader(new FileReader(f));
             temp = gson.fromJson(br, Run.class);
-            java.lang.System.out.print(temp+" ");
-            new Main(temp).run();
-            Main.o("Complete.");
-            f = new File("output/"+(c++)+".json"); f.delete();
-            FileWriter fw = new FileWriter(f);
-            fw.write(gson.toJson(temp));
-            fw.close();
+            br.close();
+            while(true) {
+                if (active.size() < 10) {
+                    Main.o(temp);
+                    cThread = new Main(temp);
+                    active.add(cThread);
+                    cThread.start();
+                    break;
+                }
+                for(Thread t : active){
+                    if(!t.isAlive()) {
+                        Main.o("Completed "+t.getName());
+                        active.remove(t);
+                    }
+                }
+                Thread.sleep(1000);
+            }
+            c++;
         }
         
         
