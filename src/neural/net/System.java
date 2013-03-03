@@ -1,6 +1,7 @@
 package neural.net;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -14,6 +15,18 @@ public class System {
     public double MOMENTUM = 0.4;
     public double LEARNSPEED = 0.4;
      
+    /**
+     * Factory method that alias to the standard constructor.
+     * @param shape list of integers (in double form)
+     * @return 
+     */
+    public static System createFromList(List<Integer> shape) {
+        int[] s = new int[shape.size()];
+        for(int i = 0; i < s.length; i++){
+            s[i] = (int) shape.get(i);
+        }
+        return new System(s);
+    }   
     /**
      * The assembler works like so, if a 3-6-3 neural net is wanted. Then you would
      *  pass in `new System(3,6,3);` into the constructor
@@ -62,7 +75,6 @@ public class System {
         
     public Node [][] system;
     public ArrayList<Node> input, output;
-    
     public Double[] run(Double ... input) {
         if(input.length!=system[0].length) {
             throw new Error("Number of inputs does not match number of nodes");

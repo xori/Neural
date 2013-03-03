@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.StringTokenizer;
@@ -23,19 +24,25 @@ public class Main {
     public Main(Run r) {
         configurations = r;
     }
+    private Main(){};
     
     public void run() throws FileNotFoundException {
-        loadFile(configurations.getTrain());
-        System bob;
-        bob = new System(inputs, 40, outputs);
-        bob.setConf(configurations);
-        
-        long seed = r.nextLong();
+        List<Double> generationList;
+        long seed;
         Double [] compare;
-        // Below variables used to find max value of the output.
         int expectedValue;
         int nfound;
-        for(int j = 0; j < 100; j++) {
+        System bob;
+        
+        /**
+         * BEGIN TRAINING...
+         */
+        loadFile(configurations.getTrain());
+        bob = System.createFromList(configurations.getShape());
+        bob.setConf(configurations);
+        generationList = configurations.getTrainError();
+        for(int j = 0; j < configurations.getGenerations(); j++) {
+            seed = r.nextLong();
             // Below code shuffles the input and output in the exact same
             // manner because the two seeds are the same. 
             Collections.shuffle(input, new Random(seed + j));
@@ -47,8 +54,23 @@ public class Main {
                 nfound += max(compare) == expectedValue? 1 : 0;
                 bob.train(output.get(i));
             }
-            o(nfound/(double)input.size());
+            generationList.add( (double) nfound / (double) input.size());
         }
+        input.clear();
+        output.clear();
+        /**
+         * BEGIN TESTING...
+         */
+        loadFile(configurations.getTest());
+        bob = System.createFromList(configurations.getShape());
+        bob.setConf(configurations);
+        nfound = 0;
+        for(int i = 0; i < input.size(); i++) {
+            compare = bob.run(input.get(i));
+            expectedValue = max(output.get(i));
+            nfound += max(compare) == expectedValue? 1 : 0;
+        }
+        configurations.setTestError(nfound / (double) input.size());
     }
     /**
      * Find maximum value in array
