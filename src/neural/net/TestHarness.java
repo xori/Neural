@@ -27,7 +27,7 @@ public class TestHarness {
                 for(double momentum = 0; momentum <= 1; momentum+=0.1) {
                     for(double learnRate = 0.1; learnRate <= 1; learnRate+=0.1) {
                         for(int shape = 10; shape < 100; shape+= 10) {
-                            for(int generations = 200; generations <= 200; generations+=10) {
+                            for(int generations = 100; generations <= 100; generations+=10) {
                                 r = new Run();
                                 switch(variant) {
                                     case 0: r.setVariant("Vanilla"); break;
@@ -89,7 +89,7 @@ public class TestHarness {
             temp = gson.fromJson(br, Run.class);
             br.close();
             while(true) {
-                if (active.size() < 10) {
+                if (active.size() < 1) {
                     Main.o(temp);
                     cThread = new Main(temp);
                     active.add(cThread);
