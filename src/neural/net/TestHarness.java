@@ -73,10 +73,14 @@ public class TestHarness {
         generate();
         int c = 0;
         int end = 1000000;
-        if (args.length == 2) {
+        int threads = 10;
+        if (args.length >= 2) {
             c = Integer.parseInt(args[0]); 
             end = Integer.parseInt(args[1]);
         }        
+        if (args.length == 3){
+            threads = Integer.parseInt(args[2]);
+        }
         File f;
         Gson gson = new Gson();
         Run temp;
@@ -89,7 +93,7 @@ public class TestHarness {
             temp = gson.fromJson(br, Run.class);
             br.close();
             while(true) {
-                if (active.size() < 12) {
+                if (active.size() < threads) {
                     Main.o(temp);
                     cThread = new Main(temp);
                     active.add(cThread);
