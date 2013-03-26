@@ -52,8 +52,23 @@ public class U {
      *      the value to limit.
      * @return 
      */
-    public static Double l (double d) {
-        double D = d;
+    public static int l (double d) {
+        double D = d * 255;
+        
+        D = (D < 0)? 0 : D;
+        D = (D > 255)? 255 : D;
+        
+        return (int)D;
+    }
+    
+    /**
+     * Limits the value to between 0 and 1
+     * @param d
+     *      the value to limit.
+     * @return 
+     */
+    public static double l1 (double d) {
+        double D = d / 255.0;
         
         D = (D < 0)? 0 : D;
         D = (D > 255)? 255 : D;

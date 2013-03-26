@@ -1,5 +1,6 @@
 package feature.map.gui;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import javax.swing.JPanel;
@@ -14,9 +15,10 @@ public class JCanvas extends JPanel{
     public BufferedImage graph;
     
     public JCanvas () {
-        int width = window.canvas.getWidth();
-        int height = window.canvas.getHeight();
-        graph = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+        graph = new BufferedImage(300, 300, BufferedImage.TYPE_INT_RGB);
+        Graphics g = graph.getGraphics();
+        g.setColor(Color.LIGHT_GRAY);
+        g.fillRect(0, 0, 300, 300);
     }
     
     

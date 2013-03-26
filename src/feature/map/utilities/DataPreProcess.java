@@ -34,13 +34,32 @@ public class DataPreProcess {
                for(int x = 0; x < i.getWidth(); x++){
                    temp = new Color(i.getRGB(x, y));
                    row = new Double[3];
-                   row[0] = l( temp.getRed()   )/255.0;
-                   row[1] = l( temp.getGreen() )/255.0;
-                   row[2] = l( temp.getBlue()  )/255.0;
+                   row[0] = l1( temp.getRed()   );
+                   row[1] = l1( temp.getGreen() );
+                   row[2] = l1( temp.getBlue()  );
                    rows.add(row);
                }
            }
         }
         return (Double[]) rows.toArray();
+    }
+    
+    
+    
+    public static Double[][] random8Colours() {
+        Color[] c = new Color[] {
+            Color.BLACK, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, 
+            Color.GREEN, Color.LIGHT_GRAY, Color.MAGENTA, Color.ORANGE, Color.PINK,
+            Color.RED, Color.WHITE, Color.YELLOW
+        };
+        ArrayList<Double[]> list = new ArrayList<Double[]>();
+        Double [] temp;
+        for(Color C : c){
+            temp = new Double[]{
+              l1(C.getRed()), l1(C.getGreen()), l1(C.getBlue())
+            };
+            list.add(temp);
+        }
+        return list.toArray(new Double[0][0]);
     }
 }

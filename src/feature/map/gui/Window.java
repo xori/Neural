@@ -5,11 +5,10 @@
  */
 package feature.map.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import feature.map.SOFM;
+import feature.map.utilities.DataPreProcess;
 import java.io.File;
 import javax.swing.JFileChooser;
-import javax.swing.Timer;
 
 /**
  *
@@ -17,9 +16,12 @@ import javax.swing.Timer;
  */
 public class Window extends javax.swing.JFrame {
 
+    SOFM som;
+    
     /** Creates new form Window */
     public Window() {
         initComponents();
+        som = new SOFM(3, 200, 200, 0.6, 10, 100);
 //        Timer t = new Timer(100, new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
@@ -90,6 +92,11 @@ public class Window extends javax.swing.JFrame {
 
         jProcessButton.setText("Process Input");
         jProcessButton.setFocusPainted(false);
+        jProcessButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jProcessButtonActionPerformed(evt);
+            }
+        });
 
         jProgressBar.setToolTipText("");
         jProgressBar.setValue(10);
@@ -101,7 +108,7 @@ public class Window extends javax.swing.JFrame {
         jQMatrixButton.setText("Q-Matrix");
         jQMatrixButton.setFocusPainted(false);
 
-        jErrorLabel.setFont(new java.awt.Font("Tahoma", 0, 16)); // NOI18N
+        jErrorLabel.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jErrorLabel.setForeground(new java.awt.Color(51, 51, 51));
         jErrorLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jErrorLabel.setText("Error: 12%");
@@ -209,6 +216,13 @@ public class Window extends javax.swing.JFrame {
         }
         
     }//GEN-LAST:event_jBrowseButtonActionPerformed
+
+    private void jProcessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jProcessButtonActionPerformed
+        
+        som.setData(DataPreProcess.random8Colours());
+        som.start();
+        
+    }//GEN-LAST:event_jProcessButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public feature.map.gui.JCanvas canvas;

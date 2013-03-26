@@ -40,16 +40,37 @@ public class Node {
         Double distance = 0.0;
         
         for(int i = 0; i < input.length; i++) {
-            distance += Math.abs( input[i] - weight[i] );
+            distance += Math.pow( input[i] - weight[i],2);
         }
         
-        return distance;
+        return Math.sqrt(distance);
     }
     
-    
-    public void setAttraction (Double [] input, double amount) {
+    /**
+     * Weight update function, as per the givin lecture material.
+     * @param input
+     *          target weights
+     * @param amount 
+     *          should be a value between 0 and 1
+     */
+    public double setAttraction (Double [] input, double amount) {
+        double out = 0;
+        double temp = 0;
         for(int i = 0; i < weight.length; i++){
-            weight[i] = SOFM.LEARNING_RATE * amount * input[i] + (1 - SOFM.LEARNING_RATE * amount) * weight[i];
+            temp = SOFM.LEARNING_RATE * amount * input[i] + (1 - SOFM.LEARNING_RATE * amount);
+            out += temp;
+            weight[i] = temp * weight[i];
+            
+            
+            
+            
+            if(weight[i]< 0.000001) {
+                weight[i] = 0.0;
+            } else if(weight[i] > 1) {
+                weight[i] = 1.0;
+            }
+            
         }
+        return out;
     }
 }

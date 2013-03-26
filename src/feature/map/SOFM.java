@@ -1,10 +1,16 @@
 package feature.map;
 
-import feature.map.utilities.Pnt;
+import java.awt.Color;
 import java.awt.Image;
+import feature.map.utilities.Pnt;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import sun.java2d.pipe.BufferedBufImgOps;
+import static feature.map.gui.Main.window;
+import static feature.map.utilities.U.*;
 
 /**
  *  The class that organizes the SOFM. This trains and administers it.
@@ -69,16 +75,16 @@ public class SOFM extends Thread{
      */
     public void decayConstants (int epoch) {
         // Severity of decay. Lower = Faster
-        double DROP = GENERATIONS;
-        NB_HOOD = S_NB_HOOD * Math.exp(-epoch/DROP);
-        LEARNING_RATE = S_LEARNING_RATE * Math.exp(-epoch/DROP);
+        double DROP = GENERATIONS/2;
+        NB_HOOD = S_NB_HOOD * Math.exp(-epoch/DROP) + 1;
+        LEARNING_RATE = S_LEARNING_RATE * Math.exp(-epoch/DROP) + 0.1;        
     }
     
     /**
      * Setter function, for use with the DataPreProcess class.
      * @param data 
      */
-    public void setData(Double [] data) {
+    public void setData(Double [][] data) {
         this.data = new ArrayList(Arrays.asList(data));
     }
     
@@ -87,11 +93,59 @@ public class SOFM extends Thread{
      *  a run function.
      */
     public void run() {
-        for(int y = 0; y < HEIGHT; y++)
-            for(int x = 0; x < WIDTH; x++){
+        // shows convergence
+        double  movement;
+        Node    minimum;
+        Pnt     update_pnt;
+        int     tx,ty;
+        double  debug;
+        BufferedImage   testing = new BufferedImage(200, 200, BufferedImage.TYPE_INT_RGB);
+        
+        // Up to the maximum GENERATIONS
+        for(int i = 0; i < GENERATIONS; i++) {
+            // GUI
+            window.jProgressBar.setValue((int)((i/(double)GENERATIONS)*100));
+            
+            movement = 0;
+            // For every line of input
+            for(Double[] d : data) {
                 
+                minimum = map[0][0];
+                tx = ty = 0;
+                // Find the node with resemblance to the input
+                for(int y = 0; y < HEIGHT; y++)
+                    for(int x = 0; x < WIDTH; x++){
+                        if(map[x][y].getDistance(d) < minimum.getDistance(d)) {
+                            minimum = map[x][y];
+                            tx = x;
+                            ty = y;
+                        }                        
+                    }
+                debug = minimum.getDistance(d);
                 
-                
+                // and update it's weights along with it's neighbours
+                update_pnt = new Pnt(tx,ty);
+                for(int y = 0; y < HEIGHT; y++)
+                    for(int x = 0; x < WIDTH; x++){
+                        if(distance(new Pnt(x,y),update_pnt) > 0) {
+                            movement += map[x][y].setAttraction(d, distance(new Pnt(x,y),update_pnt));
+                        }                        
+                    }
             }
+            if (movement==0){
+                break;
+            } else {
+                decayConstants(i);
+                window.jErrorLabel.setText("Error: "+movement);
+                for(int y = 0; y < HEIGHT; y++)
+                    for(int x = 0; x < WIDTH; x++){
+                        testing.setRGB(x, y, new Color(l(map[x][y].weight[0]),l(map[x][y].weight[1]),l(map[x][y].weight[2])).getRGB());
+                    }
+                window.canvas.graph = testing;
+                window.repaint();
+            }
+        }
+        window.jProgressBar.setValue(0);
+        
     }
 }
