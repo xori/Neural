@@ -16,12 +16,12 @@ import javax.swing.JFileChooser;
  */
 public class Window extends javax.swing.JFrame {
 
-    SOFM som;
+    SOFM som = null;
+    File [] files = null;
     
     /** Creates new form Window */
     public Window() {
         initComponents();
-        som = new SOFM(3, 200, 200, 0.6, 10, 100);
 //        Timer t = new Timer(100, new ActionListener() {
 //            @Override
 //            public void actionPerformed(ActionEvent e) {
@@ -107,6 +107,11 @@ public class Window extends javax.swing.JFrame {
 
         jQMatrixButton.setText("Q-Matrix");
         jQMatrixButton.setFocusPainted(false);
+        jQMatrixButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jQMatrixButtonActionPerformed(evt);
+            }
+        });
 
         jErrorLabel.setFont(new java.awt.Font("Tahoma", 0, 10)); // NOI18N
         jErrorLabel.setForeground(new java.awt.Color(51, 51, 51));
@@ -147,19 +152,19 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(jEpochLabel, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jErrorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                    .addComponent(jQMatrixButton, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                    .addComponent(jInputLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                    .addComponent(jBrowseButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                    .addComponent(jProcessButton, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                    .addComponent(jProgressBar, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                    .addComponent(jErrorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jQMatrixButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jInputLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jBrowseButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jProcessButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jMapWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jMapHeight, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jLabelNeighbourhood, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
-                    .addComponent(jNeighbourhoodSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
+                    .addComponent(jLabelNeighbourhood, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(jNeighbourhoodSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
@@ -210,6 +215,7 @@ public class Window extends javax.swing.JFrame {
         jfc.setMultiSelectionEnabled(true);
         int result = jfc.showOpenDialog(this);
         if (result == JFileChooser.APPROVE_OPTION) {
+            files = jfc.getSelectedFiles();
             for(File f : jfc.getSelectedFiles()) {
                 System.out.println(f);
             }
@@ -219,11 +225,40 @@ public class Window extends javax.swing.JFrame {
 
     private void jProcessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jProcessButtonActionPerformed
         
-        som.setData(DataPreProcess.random8Colours());
+        if(som != null && som.isAlive()){
+            som.interrupt();
+        }
+        
+        som = new SOFM(3, Integer.parseInt(jMapWidth.getText()), 
+                          Integer.parseInt(jMapHeight.getText()), 
+                0.5, jNeighbourhoodSlider.getValue(), 500);
+        if (files == null)
+            som.setData(DataPreProcess.random8Colours());
         som.start();
         
     }//GEN-LAST:event_jProcessButtonActionPerformed
 
+    private void jQMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jQMatrixButtonActionPerformed
+        
+//        double distance = 0;
+//        Epoch e = som.output.get(som.output.size()-1);
+//        for(int y = 1; y < image.getHeight()-1; y++ )
+//            for(int x = 1; x < image.getWidth()-1; x++) {
+//                for(int jy = -1; jy < 2; jy++)
+//                    for(int jx = -1; jx < 2; jx++)
+//            }
+
+    }//GEN-LAST:event_jQMatrixButtonActionPerformed
+    
+    private double eucDistance(Double [] a, Double [] b){
+        double distance = 0;
+        
+        for(int i = 0; i < a.length; i++) {
+            distance += Math.pow(a[i]-b[i],2);
+        }
+        return Math.sqrt(distance);
+    }    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public feature.map.gui.JCanvas canvas;
     public javax.swing.JButton jBrowseButton;

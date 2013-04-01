@@ -9,4 +9,10 @@ import java.awt.Image;
 public class Epoch {
     public double error;
     public Image image;
+    public Double [][][] map;
+    
+    public Epoch(Image i, double e) {
+        error = e;
+        image = i;
+    }
 }

@@ -16,7 +16,7 @@ public class Main {
      */
     public static void main(String args[]) {
         
-        gen = new Random(1234);        
+        gen = new Random(12334);        
         
         /*
          * SETTING UP THE GUI.

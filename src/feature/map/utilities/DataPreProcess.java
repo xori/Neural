@@ -44,8 +44,6 @@ public class DataPreProcess {
         return (Double[]) rows.toArray();
     }
     
-    
-    
     public static Double[][] random8Colours() {
         Color[] c = new Color[] {
             Color.BLACK, Color.BLUE, Color.CYAN, Color.DARK_GRAY, Color.GRAY, 
