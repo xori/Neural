@@ -5,10 +5,17 @@
  */
 package feature.map.gui;
 
+import feature.map.Epoch;
 import feature.map.SOFM;
 import feature.map.utilities.DataPreProcess;
+import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import javax.swing.JFileChooser;
+import javax.swing.Timer;
+import sun.security.jca.JCAUtil;
 
 /**
  *
@@ -22,14 +29,17 @@ public class Window extends javax.swing.JFrame {
     /** Creates new form Window */
     public Window() {
         initComponents();
-//        Timer t = new Timer(100, new ActionListener() {
-//            @Override
-//            public void actionPerformed(ActionEvent e) {
-//                canvas.update();
-//                canvas.repaint();
-//            }
-//        });
-//        t.start();
+        Timer t = new Timer(500, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if(som!=null && som.isAlive()) {
+                    jEpochSlider.setValue(100);
+                    jEpochSliderCaretPositionChanged(null);
+                }
+                canvas.repaint();
+            }
+        });
+        t.start();
     }
 
     /** This method is called from within the constructor to
@@ -50,8 +60,7 @@ public class Window extends javax.swing.JFrame {
         jProgressBar = new javax.swing.JProgressBar();
         jQMatrixButton = new javax.swing.JToggleButton();
         jErrorLabel = new javax.swing.JLabel();
-        jMapWidth = new javax.swing.JTextField();
-        jMapHeight = new javax.swing.JTextField();
+        jMapDim = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
         jLabelNeighbourhood = new javax.swing.JLabel();
         jNeighbourhoodSlider = new javax.swing.JSlider();
@@ -78,6 +87,13 @@ public class Window extends javax.swing.JFrame {
         jEpochSlider.setPaintTicks(true);
         jEpochSlider.setToolTipText("The epoch to display on the above display");
         jEpochSlider.setFocusable(false);
+        jEpochSlider.addInputMethodListener(new java.awt.event.InputMethodListener() {
+            public void caretPositionChanged(java.awt.event.InputMethodEvent evt) {
+                jEpochSliderCaretPositionChanged(evt);
+            }
+            public void inputMethodTextChanged(java.awt.event.InputMethodEvent evt) {
+            }
+        });
 
         jEpochLabel.setText("epochs");
 
@@ -118,13 +134,9 @@ public class Window extends javax.swing.JFrame {
         jErrorLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jErrorLabel.setText("Error: 12%");
 
-        jMapWidth.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jMapWidth.setText("128");
-        jMapWidth.setToolTipText("width of map");
-
-        jMapHeight.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        jMapHeight.setText("128");
-        jMapHeight.setToolTipText("height of map");
+        jMapDim.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+        jMapDim.setText("128");
+        jMapDim.setToolTipText("width of map");
 
         jLabel1.setText("Map Dimensions");
 
@@ -158,14 +170,13 @@ public class Window extends javax.swing.JFrame {
                     .addComponent(jBrowseButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jProcessButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jProgressBar, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jMapWidth, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jMapHeight, javax.swing.GroupLayout.PREFERRED_SIZE, 67, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, 140, Short.MAX_VALUE)
                     .addComponent(jLabelNeighbourhood, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addComponent(jNeighbourhoodSlider, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jComboBox1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addComponent(jMapDim))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -190,9 +201,7 @@ public class Window extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jMapWidth, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jMapHeight, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jMapDim, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabelNeighbourhood)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -229,9 +238,9 @@ public class Window extends javax.swing.JFrame {
             som.stop();
         }
         
-        som = new SOFM(3, Integer.parseInt(jMapWidth.getText()), 
-                          Integer.parseInt(jMapHeight.getText()), 
-                0.5, jNeighbourhoodSlider.getValue(), 500);
+        som = new SOFM(3, Integer.parseInt(jMapDim.getText()), 
+                          Integer.parseInt(jMapDim.getText()), 
+                0.2, jNeighbourhoodSlider.getValue(), 500);
         if (files == null)
             som.setData(DataPreProcess.random8Colours());
         som.start();
@@ -240,8 +249,9 @@ public class Window extends javax.swing.JFrame {
 
     private void jQMatrixButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jQMatrixButtonActionPerformed
         
-//        double distance = 0;
-//        Epoch e = som.output.get(som.output.size()-1);
+        double distance = 0;
+        int position = (int) (jEpochSlider.getValue()/100.0*(som.output.size()-1));
+        Epoch e = som.output.get(position);
 //        for(int y = 1; y < image.getHeight()-1; y++ )
 //            for(int x = 1; x < image.getWidth()-1; x++) {
 //                for(int jy = -1; jy < 2; jy++)
@@ -249,6 +259,18 @@ public class Window extends javax.swing.JFrame {
 //            }
 
     }//GEN-LAST:event_jQMatrixButtonActionPerformed
+
+    private void jEpochSliderCaretPositionChanged(java.awt.event.InputMethodEvent evt) {//GEN-FIRST:event_jEpochSliderCaretPositionChanged
+        
+        if (som.output.isEmpty())
+            return;
+        
+        int position = (int) (jEpochSlider.getValue()/100.0*(som.output.size()-1)); 
+        Epoch e = som.output.get(position);
+        canvas.setImage(e.image.getScaledInstance(300, 300, Image.SCALE_FAST));
+        jErrorLabel.setText("Error: "+ (int) e.error);
+        
+    }//GEN-LAST:event_jEpochSliderCaretPositionChanged
     
     private double eucDistance(Double [] a, Double [] b){
         double distance = 0;
@@ -269,8 +291,7 @@ public class Window extends javax.swing.JFrame {
     public javax.swing.JLabel jInputLabel;
     public javax.swing.JLabel jLabel1;
     public javax.swing.JLabel jLabelNeighbourhood;
-    public javax.swing.JTextField jMapHeight;
-    public javax.swing.JTextField jMapWidth;
+    public javax.swing.JTextField jMapDim;
     public javax.swing.JSlider jNeighbourhoodSlider;
     public javax.swing.JButton jProcessButton;
     public javax.swing.JProgressBar jProgressBar;

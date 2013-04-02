@@ -1,6 +1,6 @@
 package feature.map;
 
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 /**
  *
@@ -8,11 +8,12 @@ import java.awt.Image;
  */
 public class Epoch {
     public double error;
-    public Image image;
-    public Double [][][] map;
+    public BufferedImage image;
+    public Node [][] map;
     
-    public Epoch(Image i, double e) {
+    public Epoch(BufferedImage i, double e,Node [][] m) {
         error = e;
         image = i;
+        map   = m;
     }
 }

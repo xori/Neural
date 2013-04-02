@@ -78,7 +78,7 @@ public class SOFM extends Thread{
         // Severity of decay. Lower = Faster
         double DROP = GENERATIONS/2;
         NB_HOOD = S_NB_HOOD * Math.exp(-epoch/DROP) + 1;
-        LEARNING_RATE = S_LEARNING_RATE * Math.exp(-epoch/DROP) + 0.01;        
+        //LEARNING_RATE = S_LEARNING_RATE * Math.exp(-epoch/DROP) + 0.01;        
     }
     
     /**
@@ -100,7 +100,6 @@ public class SOFM extends Thread{
         Node    minimum;
         Pnt     update_pnt;
         int     tx,ty;
-        int     debug_x = 0, debug_y = 0;
         BufferedImage   testing = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         
         // Up to the maximum GENERATIONS
@@ -134,19 +133,29 @@ public class SOFM extends Thread{
                     }
             }
             decayConstants(i);
-            window.jErrorLabel.setText("Error: "+movement);
+            
             for(int y = 0; y < HEIGHT; y++)
                 for(int x = 0; x < WIDTH; x++){
-                    testing.setRGB(x, y, new Color(l(map[x][y].weight[0]),l(map[x][y].weight[1]),l(map[x][y].weight[2])).getRGB());
+                    testing.setRGB(x, y, ColorWeight.Visulize(map[x][y].weight));
                 }
-            output.add(new Epoch(testing,movement));
-            window.canvas.graph = testing;
-            window.repaint();
+            output.add(new Epoch(testing,movement,map));
+            
             if(movement < 0.0001) {
-                break;
+                return;
             }
         }
         window.jProgressBar.setValue(0);
         
     }
+    
+    private Double[][][] copyOf3Dim(Node [][] array) {
+        Double[][][] copy;
+        copy = new Double[array.length][array[0].length][];
+        for(int y = 0; y < array.length; y++){
+            for(int x = 0; x < array[0].length; x++){
+                System.arraycopy(array[x][y].weight, 0, copy[x][y], 0, array[x][y].weight.length);
+            }
+        }
+        return copy;
+    }    
 }
