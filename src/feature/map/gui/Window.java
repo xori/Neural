@@ -226,7 +226,7 @@ public class Window extends javax.swing.JFrame {
     private void jProcessButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jProcessButtonActionPerformed
         
         if(som != null && som.isAlive()){
-            som.interrupt();
+            som.stop();
         }
         
         som = new SOFM(3, Integer.parseInt(jMapWidth.getText()), 

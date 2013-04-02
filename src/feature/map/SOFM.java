@@ -62,7 +62,9 @@ public class SOFM extends Thread{
      *      double between 0 and 1;
      */
     public double distance(Pnt p, Pnt q) {
-        double d = Math.sqrt(Math.pow(p.x-q.x,2) + Math.pow(p.y-q.y,2));
+        // sqrt(min(|x1 - x2|, w - |x1 - x2|)^2 + min(|y1 - y2|, h - |y1-y2|)^2)
+        double d = Math.sqrt(Math.pow(Math.min(Math.abs(p.x-q.x),WIDTH-Math.abs(p.x-q.x)),2) +
+                Math.pow(Math.min(Math.abs(p.y-q.y),HEIGHT-Math.abs(p.y-q.y)),2));
         return NB_HOOD / (d+1.0);
     }
     
