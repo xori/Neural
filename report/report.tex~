@@ -38,8 +38,8 @@
 % As a general rule, do not put math, special symbols or citations
 % in the abstract or keywords.
 \begin{abstract}
-This report is to show the uses of a Self Organizing Feature Map in cases of clustering. The Self Organizing Maps are then analyzed using density based clustering
-modelling and cluster validation using the Dunn Index.
+This report is to show the uses of a Self Organizing Feature Map in cases of clustering. The Self Organizing Maps are then anaylised using density based clustering
+modeling and cluster validation using the Dunn Index.
 \end{abstract}
 
 \IEEEpeerreviewmaketitle
@@ -52,7 +52,7 @@ outliers.
 
 \section{Problem}
 % Clear description of the problem and data being used.
-This report will look at two toy problems in image analysis. First a colour 
+This report will look at two toy problems in image analysis. First a color 
 organization problem where a subset of colours are given and the goal is to cluster
 the colours into similar and dis-similar groups. The second problem will be a type of 
 Optical Character Recognition (or OCR), wherein the goal of this problem is to find
@@ -78,14 +78,14 @@ domain ranging from 0 to 1.
 
 \subsection{Problem II: OCR}
 Optical Character Recognition is a problem traditionally solved with
-an adaline Neural Network. However in this case instead of attempting to classify
+an adaline Nerual Network. However in this case instead of attempting to classify
 an image as a letter, the goal will be to determine the number of different letters
  shown to it and group similar characters together.  
 
 For the purposes of this problem I will be giving it the first 6 letters of the 
-alphabet (A through F). All letters will be in their capital letter forms, centred
+alphabet (A through F). All letters will be in their capital letter forms, centered
 in the middle of the image with a plain white background. These images will then be
-preprocessed before analysis begins. 
+preprocessed before anaylisis begins. 
 
 The first 8 attributes of the input vector will be as follows.
 
@@ -101,17 +101,17 @@ subsection having an \emph{Average Colour} attribute along with a \emph{Standard
 
 In total this means that each image will have a 26 long input vector, with all values
 in the $\mathbb{R}$ domain and in the range of 0 to 1. The problem has a much higher 
-dimensionality and also provides the challenge of determining how to best visualize the
+dimensionality and also provides the challenge of determining how to best visulize the
 problem. As the number of features is so high, this means that the no matter what
-colour mapping technique is used no one plot can properly convey the state of the
+colour mapping technique is used no one plot can properally convey the state of the
 solution.
 
 \subsection{Using Neural Networks}
 % Why neural networks?
-Neural Networks are a method of artificial intelligence that are easy to implement and
-excels in processing noisy data, or in this case \emph{clustering} noisy data. Using 
+Neural Networks are a method of artifical intellegence that are easy to implement and
+excells in processing noisy data, or in this case \emph{clustering} noisy data. Using 
 Self Organizing Feature Maps (SOFM or SOM), we can show
-the neural net our data and see what patterns emerge. Through statistical analysis
+the nerual net our data and see what patterns emerge. Through statistical anaylisis
 we can then see what how accurate our representation is and use this to determine
 how many different groupings of input data we have and how hard it will be for other 
 AI systems (like adaline networks) to determine the difference between them.
@@ -120,19 +120,19 @@ AI systems (like adaline networks) to determine the difference between them.
 In this section the type of Neural Network that will be described will be that of
 Self Organizing Feature Maps or SOFMs. 
 
-SOFMs are a type of unsupervised computational methods for visualizing high dimensional
+SOFMs are a type of unsupervised computational methods for visulizing high dimensional
 data\cite{SOM_KO}. These SOMs are also sometimes called Kohonen Maps after their 
 creator T.~Kohonen.
 
 % What is the kohonen Maps
-A Kohonen Map is a lattice of nodes that each hold a collection of weights. Each of 
+A Kohonen Map is a latice of nodes that each hold a collection of weights. Each of 
 these nodes are aware of it's location and it's neighbours in the n-dimensional map
 it exists in. These weights that each node holds are used to organize and cluster
-the input data on this lattice. Each node is aware, or directly connected to the input
+the input data on this latice. Each node is aware, or directly connected to the input
 vectors that are being grouped onto the map.
 
 % The Learning Rule
-Each node is updated using the following high level algorithm. Given a input vector $I$.
+Each node is updated using the following highlevel algorithm. Given a input vector $I$.
 
 % find node closest to input weight (see the \Calculating Weight Distance section)
 % pull node closer to input weight
@@ -140,7 +140,7 @@ Each node is updated using the following high level algorithm. Given a input vec
 % decay learning rate and neighbourhood
 
 \begin{enumerate}
-	\item find the node with the weights that are the closest in euclidean space
+	\item find the node with the weights that are the closest in eucledian space
 to that of the input node $I$.
 	\item pull the weights of this found node closer to that of $I$.
 	\item pull the neighbours closer to the given $I$ dependant on the amount of
@@ -150,7 +150,7 @@ distance from the above node.
 
 And repeat the above for each input vector that you'd like to cluster/group. 
 
-Now that the high level algorithm is stated the following is a more detailed step
+Now that the highlevel algorithm is stated the following is a more detailed step
 for step version of the process of the SOM.
 
 \subsection{Finding the closest node}
@@ -178,11 +178,11 @@ If we only changed the single node we wouldn't be able to cluster similar vector
 $$ d = \sqrt{min(|\Delta{}x|, w - |\Delta{}x|)^2 + \\ min(|\Delta{}y|, h - |\Delta{}y|)^2} $$
 $$ D = N / (d + N) $$
 
-Where $(x,y)$ is the location of the node in the lattice we are measuring the distance for. $w$ is the width of the map and $h$ being the height of the layer. $N$ is the neighbourhood size constant and affect how large of an area is pulled.
+Where $(x,y)$ is the location of the node in the latice we are measuring the distance for. $w$ is the width of the map and $h$ being the height of the layer. $N$ is the neighbourhood size constant and affect how large of an area is pulled.
 
 \subsection{Constant Decay}
 
-As sections of the map are `pulled' toward the group of input vectors we'd like for the map to slowly converge to one state. This is accomplished by modifying the neighbourhood size constant ($N$) by slowly decreasing it's value. Eventually it would reach $1$ thus meaning the weight update function would only update itself, no one else.
+As sections of the map are `pulled' toward the group of input vectors we'd like for the map to slowly converge to one state. This is achomplished by modifying the neighbourhood size constant ($N$) by slowly decresing it's value. Eventually it would reach $1$ thus meaning the weight update function would only update itself, no one else.
 This would lead to the map converging on a single state, exactly what we want.
 
 An example of an equation of decay that could be used.
@@ -258,7 +258,7 @@ See Figure~\ref{p1_results} and Table~\ref{P1}
 
 
 \section{Image Clustering Example}
-This part is incomplete.
+This part is uncomplete.
 
 % An example of a floating figure using the graphicx package.
 % Note that \label must occur AFTER (or within) \caption.

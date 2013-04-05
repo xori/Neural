@@ -240,7 +240,7 @@ public class Window extends javax.swing.JFrame {
         
         som = new SOFM(3, Integer.parseInt(jMapDim.getText()), 
                           Integer.parseInt(jMapDim.getText()), 
-                0.2, jNeighbourhoodSlider.getValue(), 500);
+                0.2, jNeighbourhoodSlider.getValue(), 10000);
         if (files == null)
             som.setData(DataPreProcess.random8Colours());
         som.start();

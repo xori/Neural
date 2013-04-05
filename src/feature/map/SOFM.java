@@ -65,7 +65,7 @@ public class SOFM extends Thread{
         // sqrt(min(|x1 - x2|, w - |x1 - x2|)^2 + min(|y1 - y2|, h - |y1-y2|)^2)
         double d = Math.sqrt(Math.pow(Math.min(Math.abs(p.x-q.x),WIDTH-Math.abs(p.x-q.x)),2) +
                 Math.pow(Math.min(Math.abs(p.y-q.y),HEIGHT-Math.abs(p.y-q.y)),2));
-        return NB_HOOD / (d+1.0);
+        return NB_HOOD / (d+NB_HOOD);
     }
     
     /**
@@ -76,7 +76,7 @@ public class SOFM extends Thread{
      */
     public void decayConstants (int epoch) {
         // Severity of decay. Lower = Faster
-        double DROP = GENERATIONS/2;
+        double DROP = GENERATIONS/5;
         NB_HOOD = S_NB_HOOD * Math.exp(-epoch/DROP) + 1;
         //LEARNING_RATE = S_LEARNING_RATE * Math.exp(-epoch/DROP) + 0.01;        
     }

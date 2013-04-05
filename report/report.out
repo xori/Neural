@@ -1,0 +1,17 @@
+\BOOKMARK [1][-]{section.1}{Introduction}{}% 1
+\BOOKMARK [1][-]{section.2}{Problem}{}% 2
+\BOOKMARK [2][-]{subsection.2.1}{Problem I: Colour Map}{section.2}% 3
+\BOOKMARK [2][-]{subsection.2.2}{Problem II: OCR}{section.2}% 4
+\BOOKMARK [2][-]{subsection.2.3}{Using Neural Networks}{section.2}% 5
+\BOOKMARK [1][-]{section.3}{Neural Networks}{}% 6
+\BOOKMARK [2][-]{subsection.3.1}{Finding the closest node}{section.3}% 7
+\BOOKMARK [2][-]{subsection.3.2}{Weight Update}{section.3}% 8
+\BOOKMARK [2][-]{subsection.3.3}{Neighbourhood Update}{section.3}% 9
+\BOOKMARK [2][-]{subsection.3.4}{Constant Decay}{section.3}% 10
+\BOOKMARK [1][-]{section.4}{Methods of Analysis}{}% 11
+\BOOKMARK [2][-]{subsection.4.1}{Density Based Clustering}{section.4}% 12
+\BOOKMARK [2][-]{subsection.4.2}{Cluster Validation Using Dunn Index}{section.4}% 13
+\BOOKMARK [1][-]{section.5}{Results and Discussion}{}% 14
+\BOOKMARK [1][-]{section.6}{Image Clustering Example}{}% 15
+\BOOKMARK [1][-]{section.7}{Conclusion}{}% 16
+\BOOKMARK [1][-]{section*.1}{References}{}% 17
